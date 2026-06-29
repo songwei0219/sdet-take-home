@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portfolio Dashboard</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; color: #1a1a1a; }
+      h1 { font-size: 1.4rem; }
+      .portfolio { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+      .portfolio h2 { margin: 0 0 .5rem; font-size: 1.1rem; }
+      table { border-collapse: collapse; width: 100%; margin-top: .5rem; }
+      th, td { text-align: left; padding: .35rem .6rem; border-bottom: 1px solid #eee; }
+      .pnl-gain { color: #137333; }
+      .pnl-loss { color: #c5221f; }
+      .total { font-weight: 600; }
+      form { margin: 1rem 0; display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+      input { padding: .4rem; border: 1px solid #ccc; border-radius: 4px; }
+      button { padding: .45rem .9rem; border: 0; border-radius: 4px; background: #1a73e8; color: #fff; cursor: pointer; }
+      button[disabled] { opacity: .6; cursor: default; }
+      #status { margin-left: .5rem; color: #666; }
+      .loading { color: #888; }
+    </style>
+  </head>
+  <body>
+    <h1>Portfolio Dashboard</h1>
+
+    <form id="create-form" data-cy="create-form">
+      <input data-cy="name-input" name="name" placeholder="Portfolio name" required />
+      <input data-cy="cash-input" name="cashBalance" type="number" placeholder="Cash balance" value="10000" />
+      <button data-cy="create-submit" type="submit">Create portfolio</button>
+      <span id="status" data-cy="status"></span>
+    </form>
+
+    <div id="portfolios" data-cy="portfolios">
+      <p class="loading" data-cy="loading">Loading portfolios…</p>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

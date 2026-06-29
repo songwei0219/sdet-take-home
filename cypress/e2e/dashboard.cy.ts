@@ -27,8 +27,16 @@ describe("Portfolio Dashboard", () => {
     cy.get('[data-cy="portfolio"][data-id="1"]')
       .find('[data-cy="position-row"][data-symbol="AAPL"]')
       .find('[data-cy="position-pnl"]')
-      .should("have.class", "pnl-gain")
-      .and("not.have.class", "pnl-loss");
+      .should("be.visible")
+      //.should("have.class", "pnl-gain")
+      //.and("not.have.class", "pnl-loss");.should("be.visible")
+      //Wei's change
+      .then(($pnl) => {
+        const text = $pnl.text().replace(/[^0-9.-]/g, "");
+        const value = parseFloat(text);
+        expect(value).to.be.greaterThan(0);
+        cy.wrap($pnl).should("have.class", "pnl-gain").and("not.have.class", "pnl-loss");
+      });
   });
 
   it("renders mocked portfolios from a stubbed API (component-style)", () => {
@@ -37,7 +45,6 @@ describe("Portfolio Dashboard", () => {
     // request fired during page load is never stubbed — the UI shows the real
     // seeded data instead of the mock, and this assertion fails. Register the
     // intercept BEFORE visiting.
-    cy.visit("/");
     cy.intercept("GET", "/api/portfolios", {
       statusCode: 200,
       body: [
@@ -52,9 +59,12 @@ describe("Portfolio Dashboard", () => {
       ],
     }).as("list");
 
+    cy.visit("/");// by Wei
+    cy.wait("@list"); // by Wei
     cy.contains('[data-cy="portfolio-name"]', "Mocked Fund");
     cy.get('[data-cy="portfolio"]').should("have.length", 1);
   });
+
 
   it("creates a portfolio and confirms the saved status", () => {
     // The create POST resolves after a short delay; the UI shows "Saving…" then
@@ -63,18 +73,22 @@ describe("Portfolio Dashboard", () => {
     // the assertion runs before the value is set — and before the request has
     // even resolved. Fix by waiting on the create request (cy.intercept alias)
     // and asserting inside the Cypress chain — not with a fixed cy.wait sleep.
+    cy.intercept("POST", "/api/portfolios").as("create");
     cy.visit("/");
 
     cy.get('[data-cy="name-input"]').type("Tactical Fund C");
     cy.get('[data-cy="cash-input"]').clear().type("15000");
     cy.get('[data-cy="create-submit"]').click();
 
-    let statusText: string | undefined;
-    cy.get('[data-cy="status"]').then(($el) => {
-      statusText = $el.text();
-    });
+    cy.wait("@create");
+    cy.get('[data-cy="status"]').should("contain", "Saved");
+    
+    //let statusText: string | undefined;
+    //cy.get('[data-cy="status"]').then(($el) => {
+      //statusText = $el.text();
+    //});
 
     // Runs synchronously, before the .then above — statusText is undefined.
-    expect(statusText).to.eq("Saved");
+    //expect(statusText).to.eq("Saved");
   });
 });

@@ -46,7 +46,7 @@ function positionMarketValue(p) {
 function positionPnl(p) {
   // PLANTED BUG (#1): cost basis and current price are swapped, so P&L has the
   // wrong sign. A correct implementation is (currentPrice - costBasis) * qty.
-  return (p.costBasis - p.currentPrice) * p.quantity;
+  return (p.currentPrice - p.costBasis) * p.quantity;
 }
 
 // Total portfolio value = cash + sum of position market values.
